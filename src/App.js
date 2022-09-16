@@ -1,24 +1,82 @@
+import { useState } from 'react';
+
 function App() {
+
+	const [calc, setCalc] = useState("");
+	const [result, setResult] = useState("");
+
+	const ops = ['/', '*', '+', '-', '.'];
+
+	// update calc num/ops inputted
+	const updateCalc = value => {
+		if (
+			ops.includes(value) && calc === '' ||
+			ops.includes(value) && ops.includes(calc.slice(-1))
+		) {
+			return;
+		}
+
+		setCalc(calc + value);
+
+		if (!ops.includes(value)) {
+			setResult(eval(calc + value).toString());
+		}
+	}
+
+	// function to auto create numbers 1-9
+	const createDigits = () => {
+		const digits = [];
+
+		for (let i = 1; i < 10; i++) {
+			digits.push(
+				<button onClick={() => updateCalc(i.toString())}key={i}>
+					{i}
+				</button>
+			)
+		}
+		
+		return digits;
+	}
+
+	// function to calculate sum
+	const calculate = () => {
+		setCalc(eval(calc).toString());
+	}
+
+	// function to delete the last inputted num/op
+	const deleteLast = () =>{
+		if (calc === '') {
+			return;
+		}
+
+		const value = calc.slice(0, -1);
+
+		setCalc(value);
+	}
+
 	return (
 		<div className="App">
 			<div className="calculator">
 				<div className="display">
-					<span>(0)</span> 0
+					{ result ? <span>({result})</span> : '' }&nbsp;
+					{ calc || "0" }
 				</div>
 
 				<div className="operators">
-					<button>/</button>
-					<button>*</button>
-					<button>+</button>
-					<button>/</button>
+					<button onClick={() => updateCalc('/')}>/</button>
+					<button onClick={() => updateCalc('*')}>*</button>
+					<button onClick={() => updateCalc('+')}>+</button>
+					<button onClick={() => updateCalc('-')}>/</button>
 
-					<button>DEL</button>
+					<button onClick={deleteLast}>DEL</button>
 				</div>
 
 				<div className="digits">
-					<button>0</button>
-					<button>.</button>
-					<button>=</button>
+					{ createDigits() }
+					<button onClick={() => updateCalc('0')}>0</button>
+					<button onClick={() => updateCalc('.')}>.</button>
+
+					<button onClick={calculate}>=</button>
 				</div>
 				
 			</div>
